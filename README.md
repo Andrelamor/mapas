@@ -1,17 +1,14 @@
 ✅ 1. Instalar as bibliotecas necessárias
 Abra seu terminal (ou prompt de comando) e execute:
-
-bash
-Copiar
-Editar
+````
 pip install geopandas matplotlib shapely
+````
 ✅ 2. Salve o arquivo GeoJSON
-Salve o arquivo geojs-31-mun.json (você já tem!) em uma pasta acessível. Guarde o caminho do arquivo — por exemplo: C:/meus_arquivos/geojs-31-mun.json.
+Salve o arquivo ``geojs-31-mun.json`` (você já tem!) em uma pasta acessível. Guarde o caminho do arquivo — por exemplo: ``C:/meus_arquivos/geojs-31-mun.json``.
 
 ✅ 3. Código Python para gerar o mapa
 python
-Copiar
-Editar
+````
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import json
@@ -65,22 +62,7 @@ ax.axis("off")
 
 plt.tight_layout()
 plt.show()
-Se quiser, posso te ajudar a salvar o mapa como imagem, ou até criar uma versão interativa com folium.
-
-Quer fazer isso também?
-
-
-
-
-
-
-
-Você disse:
-Sim
-
-
-O ChatGPT disse:
-Ótimo! Vamos fazer duas coisas agora:
+````
 
 Gerar um mapa interativo com folium, que você pode visualizar no navegador e compartilhar.
 
@@ -88,15 +70,13 @@ Salvar como imagem (PNG) usando matplotlib.
 
 ✅ 1. Instalar o folium
 No terminal:
-
-bash
-Copiar
-Editar
+````
 pip install folium
+````
 ✅ 2. Código para gerar mapa interativo e salvar como HTML
 python
-Copiar
-Editar
+
+````
 import folium
 from shapely.geometry import mapping
 
@@ -123,14 +103,14 @@ for _, row in gdf.iterrows():
 # Salvar como HTML
 mapa.save("mapa_mg_interativo.html")
 print("Mapa interativo salvo como 'mapa_mg_interativo.html'")
+````
 Depois, basta abrir o arquivo mapa_mg_interativo.html no navegador.
 
 ✅ 3. Salvar o mapa como imagem (PNG)
 Você já viu a visualização com matplotlib. Para salvar em vez de mostrar:
 
 python
-Copiar
-Editar
+````
 # Salvar como imagem PNG
 fig, ax = plt.subplots(figsize=(12, 12))
 gdf.plot(ax=ax, color=gdf["cor"], edgecolor="black", linewidth=0.2)
@@ -140,3 +120,4 @@ ax.axis("off")
 plt.tight_layout()
 plt.savefig("mapa_mg_destacado.png", dpi=300)
 print("Imagem salva como 'mapa_mg_destacado.png'")
+````
