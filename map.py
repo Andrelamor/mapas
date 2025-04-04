@@ -1,25 +1,21 @@
 import geopandas as gpd
 import matplotlib.pyplot as plt
-import json
-from shapely.geometry import shape
-from geopandas import GeoDataFrame, GeoSeries
+from unidecode import unidecode
+import os
 
-# Caminho para seu arquivo GeoJSON
+# Verificar se o arquivo existe
 geojson_path = "geojs-31-mun.json"
+if not os.path.exists(geojson_path):
+    raise FileNotFoundError(f"O arquivo {geojson_path} não foi encontrado. Verifique o caminho e tente novamente.")
 
-# Abrir e carregar os dados manualmente
-with open(geojson_path, encoding='utf-8') as f:
-    data = json.load(f)
+# Carregar o GeoJSON
+gdf = gpd.read_file(geojson_path)
 
-# Extrair geometrias e propriedades
-geometrias = [shape(feat["geometry"]) for feat in data["features"]]
-propriedades = [feat["properties"] for feat in data["features"]]
+# Normalizar os nomes removendo acentos
+gdf["name"] = gdf["name"].apply(lambda x: unidecode(x.upper()))
 
-# Criar GeoDataFrame
-gdf = GeoDataFrame(propriedades, geometry=GeoSeries(geometrias), crs="EPSG:4674")
-
-# Lista de municípios (em maiúsculas)
-municipios_destacados = [
+# Lista de municípios a destacar
+municipios_destacados = {
     "BELO HORIZONTE", "TRES CORACOES", "BETIM", "BAMBUI", "UBA", "BARBACENA", "SABARA",
     "PATOS DE MINAS", "JUIZ DE FORA", "AGUAS FORMOSAS", "ALEM PARAIBA", "ANDRADAS",
     "ARAXA", "BOM DESPACHO", "BRASILIA DE MINAS", "BRUMADINHO", "CAMPO BELO",
@@ -35,20 +31,17 @@ municipios_destacados = [
     "TEOFILO OTONI", "TIMOTEO", "TRES PONTAS", "UBERABA", "UBERLANDIA", "VARGINHA",
     "VICOSA", "ALFENAS", "CORONEL FABRICIANO", "DIVINOPOLIS", "GOVERNADOR VALADARES",
     "LEOPOLDINA", "SAO JOAO DEL REI", "UNAI"
-]
+}
 
+# Criar coluna de cores
+gdf["color"] = gdf["name"].apply(lambda x: "red" if x in municipios_destacados else "lightgrey")
 
-# Padronizar os nomes
-gdf["NM_MUNICIP"] = gdf["NM_MUNICIP"].str.upper()
-
-# Definir cor por município
-gdf["cor"] = gdf["NM_MUNICIP"].apply(lambda nome: "red" if nome in municipios_destacados else "lightgrey")
-
-# Plotar
-fig, ax = plt.subplots(figsize=(12, 12))
-gdf.plot(ax=ax, color=gdf["cor"], edgecolor="black", linewidth=0.3)
-ax.set_title("Municípios de MG destacados em vermelho", fontsize=14)
+# Plotar o mapa
+fig, ax = plt.subplots(figsize=(10, 10))
+gdf.plot(ax=ax, color=gdf["color"], edgecolor="black", linewidth=0.3)
+ax.set_title("Municípios Destacados em Vermelho", fontsize=14)
 ax.axis("off")
 
-plt.tight_layout()
+# Salvar imagem do mapa
+plt.savefig("mapa_municipios.png", dpi=300, bbox_inches="tight")
 plt.show()
