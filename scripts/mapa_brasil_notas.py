@@ -11,7 +11,7 @@ import matplotlib as mpl
 # --------- CONFIG ----------
 # caminho para o GeoJSON/TopoJSON com os limites dos estados do Brasil
 # substitua pelo caminho do seu arquivo 'brasil_completo.json' se tiver
-PATH_BRAZIL_GEOJSON = "brasil_amostra_sem_id.json"
+PATH_BRAZIL_GEOJSON = "geojson-bases/brasil_amostra_sem_id.json"
 
 # onde salvar a imagem resultante
 OUTPUT_PNG = "mapa_brasil_notas.png"
@@ -141,18 +141,31 @@ for idx, row in mun_gdf.iterrows():
                linewidth=0.5,
                zorder=5)
 
-# 4) Colorbars/legendas
-# colorbar para estados (greens)
-sm_states = mpl.cm.ScalarMappable(cmap=cmap_estado, norm=mpl.colors.Normalize(vmin=vmin, vmax=vmax))
-sm_states._A = []
-cbar = fig.colorbar(sm_states, ax=ax, fraction=0.035, pad=0.02)
-cbar.set_label("Nota (estados) — escala 0–20")
+# 4) Colorbars / legendas (eixos separados para evitar sobreposição)
 
-# colorbar para municípios (blues)
-sm_muns = mpl.cm.ScalarMappable(cmap=cmap_mun, norm=mpl.colors.Normalize(vmin=vmin, vmax=vmax))
+# cria dois eixos auxiliares à direita do mapa
+# [left, bottom, width, height] em coordenadas relativas da figura
+cax_states = fig.add_axes([0.84, 0.30, 0.02, 0.40])   # estados
+cax_muns   = fig.add_axes([0.92, 0.30, 0.02, 0.40])   # municípios
+
+# colorbar para estados (verde)
+sm_states = mpl.cm.ScalarMappable(
+    cmap=cmap_estado,
+    norm=mpl.colors.Normalize(vmin=vmin, vmax=vmax)
+)
+sm_states._A = []
+cbar_states = fig.colorbar(sm_states, cax=cax_states)
+cbar_states.set_label("Nota (estados)\nEscala 0–20", fontsize=9)
+
+# colorbar para municípios (azul)
+sm_muns = mpl.cm.ScalarMappable(
+    cmap=cmap_mun,
+    norm=mpl.colors.Normalize(vmin=vmin, vmax=vmax)
+)
 sm_muns._A = []
-cbar2 = fig.colorbar(sm_muns, ax=ax, fraction=0.035, pad=0.08)
-cbar2.set_label("Nota (municípios) — escala 0–20")
+cbar_muns = fig.colorbar(sm_muns, cax=cax_muns)
+cbar_muns.set_label("Nota (municípios)\nEscala 0–20", fontsize=9)
+
 
 # 5) Rótulos opcionais dos municípios (pequeno deslocamento para não sobrepor)
 for idx, row in mun_gdf.iterrows():
